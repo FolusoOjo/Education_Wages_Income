@@ -15,9 +15,7 @@ The final deliverables include a clean dataset, exploratory data analysis (EDA),
 ## Project Structure
 ```text
 capstone-income-analysis/
-
-├── requirements.txt/
-│
+|
 ├── README.md                          # Project documentation
 │
 ├── raw_data/                          # Original unmodified datasets
@@ -39,8 +37,13 @@ capstone-income-analysis/
 │   ├── capstone_cleaning.ipynb        # Python file 1: cleans raw datasets → cleaned_data/
 │   └── merging.ipynb                  # Python file 2: merges pivot outputs → merged_final.xlsx
 │
-└── eda/                               # All exploratory data analysis work
-    └── capstone_eda.ipynb             # Python file 3: Univariate, bivariate & multivariate analysis
+├── eda/                               # All exploratory data analysis work
+|   └── capstone_eda.ipynb             # Python file 3: Univariate, bivariate & multivariate analysis
+|
+├── requirements.txt/
+|
+└── README.md                          # Project documentat
+
 
 
 ```
