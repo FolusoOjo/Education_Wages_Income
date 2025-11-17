@@ -15,7 +15,9 @@ The final deliverables include a clean dataset, exploratory data analysis (EDA),
 ## Project Structure
 ```text
 capstone-income-analysis/
-
+|
+├── README.md                          # Project documentation
+│
 ├── raw_data/                          # Original unmodified datasets
 │   ├── education_level_raw.xlsx
 │   └── cis_data_raw.xlsx
@@ -36,12 +38,14 @@ capstone-income-analysis/
 │   └── merging.ipynb                  # Python file 2: merges pivot outputs → merged_final.xlsx
 │
 ├── eda/                               # All exploratory data analysis work
-│   └── capstone_eda.ipynb             # Python file 3: Univariate, bivariate & multivariate analysis
-│
-├── tableau_work/                      # Dashboards + packaged workbook
-│   └── dashboards.twbx                # Tableau workbook (optional)
-│
-└── README.md                          # Project documentation
+|   └── capstone_eda.ipynb             # Python file 3: Univariate, bivariate & multivariate analysis
+|
+├── requirements.txt/
+|
+└── README.md                          # Project documentat
+
+
+
 ```
 
 ## Full Project Workflow
