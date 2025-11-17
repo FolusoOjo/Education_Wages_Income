@@ -35,7 +35,7 @@ capstone-income-analysis/
 │
 ├── python_scripts/                    # Python/Jupyter scripts used in workflow
 │   ├── capstone_cleaning.ipynb        # Python file 1: cleans raw datasets → cleaned_data/
-│   └── merging.ipynb                  # Python file 2: merges pivot outputs → merged_final.xlsx
+│   └── capstone_data_merging.ipynb                  # Python file 2: merges pivot outputs → merged_final.xlsx
 │
 ├── eda/                               # All exploratory data analysis work
 |   └── capstone_eda.ipynb             # Python file 3: Univariate, bivariate & multivariate analysis
