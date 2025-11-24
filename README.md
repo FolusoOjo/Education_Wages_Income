@@ -29,10 +29,6 @@ Education_Wage_Income_Analysis/
 │   ├── education_level_cleaned.xlsx
 │   └── cis_data_cleaned.xlsx
 │
-├── pivot_output/                      # Pivot tables created in Excel
-│   ├── education_pivot_output.xlsx    # Avg hourly wage by year,education and gender
-│   └── cis_pivot_output.xlsx          # Avg earnings, salary, total income
-│
 ├── merged_data/                       # Final dataset used for EDA and Tableau
 │   └── merged_final.xlsx              
 │
@@ -83,18 +79,9 @@ After generating the merged dataset:
   - Normalized column formats
   - Exported cleaned datasets
 
-2. **Pivot Calculations**: Pivot tables were created in Excel to aggregate the cleaned datasets before merging.
-  - We used the common dimensions Year, Education, Gender, Immigration Status generating a summary of the tables.
-  - Education_Pivot_Output computed the average hourly wages for Men and Women, which was aggregated by year, education, gender and immigration status.
-  - cis_pivot_output computed the average total income, average earning and average wage salary, which was aggregated by year, education, gender and immigration status.
+2. **Dataset Merging**: Both datasets were merged together on similar columns such as 'year, education_level, immigrant_status' and we aggregated the CIS dataset.
 
-3. **Dataset Merging**: The pivot outputs were merged on
-```text
-year, education, gender, immigration status
-```
-this creates a complete economic profile per group.
-
-4. **Exploratory Data Analysis**: We performed the:
+3. **Exploratory Data Analysis**: We performed the:
   - Univariate Analysis (Distribution of categories and numeric variables)
   - Bivariate Analysis (income by gender, education, immigration status)
   - Multivariate analysis using FacetGrid(intersection of gender, immigration status and education)
@@ -107,9 +94,8 @@ this creates a complete economic profile per group.
   - The dashboards allow interactive filtering using immigration status.
 
 ## Technologies Used
-  - Python- Pandas, Seaborn, Matplotlib
+  - Python- Pandas, Numpy, Seaborn, Matplotlib
   - Jupyter Notebook
-  - Excel- Pivot Tables
   - Tableau- Interactive Dashboards
   - Git and Github
 
