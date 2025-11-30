@@ -38,6 +38,7 @@ Education_Wage_Income_Analysis/
 │   └── capstone_data_merging.ipynb    # Merges pivot outputs → merged_data/
 │
 ├── eda/                               # All exploratory data analysis work
+|   ├── eda_questions.ipynb
 |   └── capstone_eda.ipynb             # Univariate, Bivariate & Multivariate analysis
 |
 ├── requirements.txt/                  # Python dependencies
