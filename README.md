@@ -41,6 +41,10 @@ Education_Wage_Income_Analysis/
 |   ├── eda_questions.ipynb
 |   └── capstone_eda.ipynb             # Univariate, Bivariate & Multivariate analysis
 |
+├── presentation/                      # Final Project Deliverables
+|   ├── Group 5 Capstone.pptx
+|   └── Capstone Final Dashboard.twbx  #
+|
 ├── requirements.txt/                  # Python dependencies
 |
 └── README.md                          # Project documentation
