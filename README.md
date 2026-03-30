@@ -1,58 +1,53 @@
-# Bridging the Gap: Education, Wages and Labour Market Outcomes in Ontario.
+# Bridging the Gap: Education & Income Inequality Among Immigrants
+### A comparative analysis of how education shapes income outcomes for Immigrants in Canada and the United States and where the gap Persists.
 
 ## Project Overview
 
-This project analyzes how education level, gender, and immigration status influence labour-market outcomes in Ontario, Canada.
-Using data from the **CIS (Canadian Income Survey)** and the **Education-Level Wage dataset**, the objective is to:
-  - Measure wage returns across education levels
-  - Compare outcomes between immigrants and non-immigrants
-  - Analyze gender-based wage patterns
-  - Explore long term income trends.
-    
-The final deliverables includes:
-  - Cleaned Datasets
-  - Merged analysis-ready dataset
-  - Python-based EDA (univariate, bivariate and multivariate)
-  - Interactive Tableau dashboards
+This project investigates how education impacts income inequality, with a focus on immigrant populations across two countries.
 
+The analysis combines exploratory data analysis (EDA) and machine learning techniques to identify patterns, differences, and structural gaps in labour market outcomes.
+
+## Project Evolution.
+This project was developed in two phases:
+
+Phase 1:
+Focused on Ontario, Canada using CIS and education wage data to analyze labour market outcomes and income patterns.
+Phase 2:
+Expanded into a cross-country comparison (Canada vs United States), introducing machine learning models to evaluate whether income patterns generalize across labour markets.
 
 ## Project Structure
 ```text
-Education_Wage_Income_Analysis/
+Education_Wage_Income/
 |
 │
-├── raw_data/                          # Original unmodified datasets
-│   ├── education_level_raw.xlsx
-│   └── cis_data_raw.xlsx
-│
-├── cleaned_data/                      # Datasets after preprocessing
-│   ├── education_level_cleaned.xlsx
-│   └── cis_data_cleaned.xlsx
-│
-├── merged_data/                       # Final dataset used for EDA and Tableau
-│   └── merged_final.xlsx              
-│
-├── python_scripts/                    # Python workflow scripts
-│   ├── capstone_cleaning_education_level.ipynb
-│   ├── capstone_cleaning_cis_data.ipynb
-│   └── capstone_data_merging.ipynb    # Merges pivot outputs → merged_data/
-│
-├── eda/                               # All exploratory data analysis work
-|   ├── eda_questions.ipynb
-|   └── capstone_eda.ipynb             # Univariate, Bivariate & Multivariate analysis
+├── phase_1_canada_eda/
+|                    
+├── phase_2_ml_comparison/
 |
-├── presentation/                      # Final Project Deliverables
-|   ├── Group 5 Capstone.pptx
-|   └── Capstone Final Dashboard.twbx  
+├── requirements.txt/                  
 |
-├── requirements.txt/                  # Python dependencies
-|
-└── README.md                          # Project documentation
-
+└── README.md                         
 
 
 ```
-## How to Run the Project
+## Phase 1: Canada Analysis (EDA & Tableau)
+  ### Objective
+    To explore how education, gender and immigration status influence income in Ontario, Canada.
+
+  ### Key Steps
+    - Data Cleaning and Preprocessing
+    - Data Merging (CIS + Education Level Dataset)
+    - Exploratory Data Analysis
+        - Univariate
+        - Bivariate
+        - Multivariate
+    - Tableau Dashboard Development
+
+  ### Outputs
+    - Cleaned Datasets
+    - EDA notebooks
+    - Interactive Tableau Dashboard
+    - Presentation Slides
 
 ### Step 1- Clone the Repository
 ```bash
