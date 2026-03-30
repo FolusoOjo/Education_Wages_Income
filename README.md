@@ -12,6 +12,7 @@ This project was developed in two phases:
 
 Phase 1:
 Focused on Ontario, Canada using CIS and education wage data to analyze labour market outcomes and income patterns.
+
 Phase 2:
 Expanded into a cross-country comparison (Canada vs United States), introducing machine learning models to evaluate whether income patterns generalize across labour markets.
 
