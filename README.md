@@ -1,5 +1,5 @@
 # Bridging the Gap: Education & Income Inequality Among Immigrants
-### A comparative analysis of how education shapes income outcomes for Immigrants in Canada and the United States and where the gap Persists.
+### A comparative analysis of how education shapes income outcomes for Immigrants in Canada and the United States and where the gap persists.
 
 ## Project Overview
 
