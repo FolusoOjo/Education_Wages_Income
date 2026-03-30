@@ -50,49 +50,31 @@ Education_Wage_Income/
     - Interactive Tableau Dashboard
     - Presentation Slides
 
-### Step 1- Clone the Repository
-```bash
-git clone https://github.com/FolusoOjo/Education_Wages_Income.git
-cd Education_Wages_Income
-```
+## Phase 2: Machine Learning (Canada vs US)
+  ### Objective
+    This phase shifts from descriptive analysis to predictive modeling,e nabling cross-country comparison.
 
-### Step 2- Install Dependencies
-Ensure you have Python installed (3.10+ recommended)
-```bash
-pip install -r requirements.txt
-```
+  ### Canada Workflow
+    - Data Cleaning
+    - Feature Preparation
+    - Machine Learning Model development
 
-### Step 3- Run the Notebooks
-Execute these notebooks in this order:
-  1. python_scripts/capstone_cleaning.ipynb
-  2. python_scripts/capstone_data_merging.ipynb
-  3. eda/capstone_eda.ipynb
+  ### US Workflow
+    - Data Cleaning
+    - Data Merging
+    - Feature Preparation
+    - Machine Learning Model development
+    
+  ### Key Work Done
+    - Built seperate ML pipelines for Canada and the US.
+    - Used comparable features across both datasets.
+    - Compared model behaviour and predictive patterns.
 
-### Step 4- Open the Tableau Dashboard
-After generating the merged dataset:
-  Open your Tableau dashboard file manually inside Tableau.
-
-
-## Full Project Workflow
-1. **Data Cleaning**: this was done using jupyter notebook (capstone_cleaning.ipynb)
-  - Handled missing values,
-  - Standardized categorical labels mostly in the CIS data (gender, education, immigration_status)
-  - Normalized column formats
-  - Exported cleaned datasets
-
-2. **Dataset Merging**: Both datasets were merged together on similar columns such as 'year, education_level, immigrant_status' and we aggregated the CIS dataset.
-
-3. **Exploratory Data Analysis**: We performed the:
-  - Univariate Analysis (Distribution of categories and numeric variables)
-  - Bivariate Analysis (income by gender, education, immigration status)
-  - Multivariate analysis using FacetGrid(intersection of gender, immigration status and education)
-  - This helped to identify wage gaps and structual differences between groups.
-
-5. **Dashboard Development**: Built 3 dashbaords:
-  - Overview Dashboard - Project Summary and income KPI's
-  - Education and Wage Trends - Bar Charts, Line Charts, Heatmaps.
-  - Labour and Income Insights - Scatter plots, comparisons and wage gaps.
-  - The dashboards allow interactive filtering using immigration status.
+  ### Key Insights
+    - Education is a strong predictor of income across both countries.
+    - Income gaps persist across gender and immigration status.
+    - Structural differences exist between labour markets.
+    - Patterns are not fully transferable across countries.
 
 ## Technologies Used
   - Python- Pandas, Numpy, Seaborn, Matplotlib
@@ -100,12 +82,11 @@ After generating the merged dataset:
   - Tableau- Interactive Dashboards
   - Git and Github
 
-## Key Insights (Summary)
-  - Higher education gives higher income consistently across all groups
-  - Immigrants earn less than non- immigrants, even with the same certification (education level)
-  - Women earn less than men, across all education level.
-  - Immigrant women faces the largest income gaps
-  - Wage differences remain stable over time, this suggests persistent wage gaps.
+## Project Highlights
+  - End-to-end analytics pipelinee (Cleaning - EDA - ML)
+  - Cross- country comparative analysis
+  - Integration of data analysis and machine learning
+  - Real-World policy relevant insights.
 
 ## Team Members
   - Ameenat Ali
