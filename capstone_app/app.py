@@ -1,3 +1,4 @@
+from pathlib import Path
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -5,7 +6,13 @@ import joblib
 import os
 import base64
 import plotly.graph_objects as go
- 
+
+BASE_DIR = Path(__file__).resolve().parent
+
+def app_path(*parts):
+    return BASE_DIR.joinpath(*parts)
+
+    
 st.set_page_config(
     page_title="Bridging the Gap",
     layout="wide",
@@ -502,12 +509,12 @@ with toggle_container:
 @st.cache_resource
 def load_models(country: str):
     folder = "Canada" if country == "Canada" else "US"
-    reg = joblib.load(os.path.join(folder, f"{folder.lower()}_structural_regressor.pkl"))
-    clf = joblib.load(os.path.join(folder, f"{folder.lower()}_structural_classifier.pkl"))
+    reg = joblib.load(app_path(folder, f"{folder.lower()}_structural_regressor.pkl"))
+    clf = joblib.load(app_path(folder, f"{folder.lower()}_structural_classifier.pkl"))
     return reg, clf
  
  
-def get_base64_image(image_path: str) -> str:
+def get_base64_image(image_path) -> str:
     with open(image_path, "rb") as f:
         return base64.b64encode(f.read()).decode()
  
@@ -515,16 +522,15 @@ def get_base64_image(image_path: str) -> str:
 @st.cache_data
 def get_mean_incomes(country: str):
     if country == "Canada":
-        path = "cis_data_cleaned_for_ml.csv"
+        path = app_path("cis_data_cleaned_for_ml.csv")
     else:
-        path = "us_df_clean.csv" if os.path.exists("us_df_clean.csv") else "us_df_clean (1).csv"
+        us_main = app_path("us_df_clean.csv")
+        us_alt = app_path("us_df_clean (1).csv")
+        path = us_main if us_main.exists() else us_alt
+
     df = pd.read_csv(path)
     df = df[df["total_income"].notna() & (df["total_income"] > 0)]
-    # Overall average by education (used for the main bar chart)
     by_edu = df.groupby("education")["total_income"].mean().round(2)
-    # Breakdown by education AND immigrant status (used for side-by-side comparison)
-    # This is the ACTUAL data gap — used instead of model prediction for the comparison
-    # so that the direction of the gap always reflects real research findings.
     by_edu_imm = df.groupby(["education", "immigrant_status"])["total_income"].mean().round(2)
     return by_edu, by_edu_imm
  
@@ -532,8 +538,8 @@ def get_mean_incomes(country: str):
 # Load flag images (fallback gracefully if files missing)
 def _load_flag(filename_stem: str, fallback_emoji: str) -> str:
     for ext in ["JPG", "jpg", "jpeg", "png"]:
-        path = f"{filename_stem}.{ext}"
-        if os.path.exists(path):
+        path = app_path(f"{filename_stem}.{ext}")
+        if path.exists():
             try:
                 b64 = get_base64_image(path)
                 return f'<img src="data:image/jpeg;base64,{b64}" style="width:22px; vertical-align:middle;">'
@@ -1015,8 +1021,9 @@ images = (
 )
 any_shown = False
 for fname in images:
-    if os.path.exists(fname):
-        st.image(fname, use_container_width=True)
+    img_path = app_path(fname)
+    if img_path.exists():
+        st.image(str(img_path), use_container_width=True)
         any_shown = True
 
 if not any_shown:
@@ -1343,8 +1350,8 @@ try:
     def get_gap_over_time():
         results = {}
         for country, path, imm_lbl, non_lbl in [
-            ("Canada",        "cis_data_cleaned_for_ml.csv",                         "Immigrant", "Born in Canada (non-immigrant)"),
-            ("United States", "us_df_clean.csv" if os.path.exists("us_df_clean.csv") else "us_df_clean (1).csv", "Immigrant", "Born in US"),
+            ("Canada", app_path("cis_data_cleaned_for_ml.csv"), "Immigrant", "Born in Canada (non-immigrant)"),
+            ("United States", app_path("us_df_clean.csv") if app_path("us_df_clean.csv").exists() else app_path("us_df_clean (1).csv"), "Immigrant", "Born in US"),
         ]:
             try:
                 df = pd.read_csv(path)
@@ -1471,8 +1478,8 @@ try:
     def get_edu_gap_by_country():
         out = {}
         for country, path, imm_lbl, non_lbl in [
-            ("Canada",        "cis_data_cleaned_for_ml.csv",                         "Immigrant", "Born in Canada (non-immigrant)"),
-            ("United States", "us_df_clean.csv" if os.path.exists("us_df_clean.csv") else "us_df_clean (1).csv", "Immigrant", "Born in US"),
+            ("Canada", app_path("cis_data_cleaned_for_ml.csv"), "Immigrant", "Born in Canada (non-immigrant)"),
+            ("United States", app_path("us_df_clean.csv") if app_path("us_df_clean.csv").exists() else app_path("us_df_clean (1).csv"), "Immigrant", "Born in US"),
         ]:
             try:
                 df  = pd.read_csv(path)
