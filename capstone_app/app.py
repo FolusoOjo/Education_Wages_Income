@@ -457,9 +457,25 @@ with _toggle_col:
 @st.cache_resource
 def load_models(country: str):
     folder = "Canada" if country == "Canada" else "US"
-    reg = joblib.load(app_path(folder, f"{folder.lower()}_structural_regressor.pkl"))
-    clf = joblib.load(app_path(folder, f"{folder.lower()}_structural_classifier.pkl"))
-    return reg, clf
+    reg_path = app_path(folder, f"{folder.lower()}_structural_regressor.pkl")
+    clf_path = app_path(folder, f"{folder.lower()}_structural_classifier.pkl")
+    
+    if not reg_path.exists():
+        st.error(f"Regressor model not found: {reg_path.name}")
+        st.stop()
+    if not clf_path.exists():
+        st.error(f"Classifier model not found: {clf_path.name}")
+        st.stop()
+    
+    try:
+        reg = joblib.load(reg_path)
+        clf = joblib.load(clf_path)
+        return reg, clf
+    except Exception as e:
+        st.error(f"Failed to load {country} models.")
+        st.info("Error: This usually happens due to scikit-learn version mismatch.")
+        st.info("Make sure the .pkl files were saved with scikit-learn==1.4.2")
+        st.stop()
 
 
 def get_base64_image(image_path: Path) -> str:
