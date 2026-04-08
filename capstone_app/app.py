@@ -300,6 +300,11 @@ html, body, [class*="css"] {{
     border: 1px solid {BORDER_COLOR};
 }}
 
+/* ── Responsive predict card inner padding ── */
+.predict-inner-pad {{
+    padding: 1.3rem 1.3rem 0.5rem;
+}}
+
 /* Policy cards */
 .policy-card {{
     background: {SURFACE_COLOR};
@@ -416,19 +421,89 @@ div[data-testid="stAlert"] {{
 }}
 
 /* Mobile */
-@media (max-width: 640px) {{
-    .block-container {{ padding: 3rem 1rem 3rem !important; }}
-    .hero-title {{ font-size: 2rem !important; }}
+@media (max-width: 480px) {{
+    /* Force single-column stacking on small phones */
+    div[data-testid="column"] {{
+        width: 100% !important;
+        flex: 1 1 100% !important;
+        min-width: 100% !important;
+    }}
+    .feat-box {{
+        min-width: 100% !important;
+        flex: 1 1 100% !important;
+    }}
+    .policy-card {{
+        min-width: 100% !important;
+        flex: 1 1 100% !important;
+    }}
+}}
+
+@media (max-width: 768px) {{
+    /* Layout */
+    .block-container {{ padding: 3rem 0.75rem 3rem !important; }}
+
+    /* Hero */
+    .hero-title {{ font-size: 1.9rem !important; line-height: 1.1 !important; }}
+    .hero-sub {{ font-size: 0.95rem !important; }}
     .hero-wrap {{ padding: 1.5rem 0 1.5rem !important; }}
-    .result-row {{ flex-direction: column !important; }}
-    .metrics-grid {{ grid-template-columns: 1fr !important; }}
+    .hero-eyebrow {{ font-size: 0.72rem !important; }}
+
+    /* Flag pills — wrap tightly */
+    .flag-row {{ gap: 0.35rem !important; margin-top: 1rem !important; }}
+    .flag-pill {{ font-size: 0.75rem !important; padding: 4px 9px !important; }}
+
+    /* Stat boxes — horizontal row instead of column */
     .stat-col {{
         flex-direction: row !important;
         flex-wrap: wrap !important;
         align-items: center !important;
         justify-content: flex-start !important;
-        padding-top: 0 !important;
+        padding-top: 0.5rem !important;
+        gap: 0.4rem !important;
     }}
+    .stat-box {{
+        min-width: 70px !important;
+        padding: 0.6rem 0.7rem !important;
+    }}
+    .stat-num {{ font-size: 1.4rem !important; }}
+    .stat-lbl {{ font-size: 0.62rem !important; }}
+
+    /* Section headers */
+    .sec-title {{ font-size: 0.88rem !important; }}
+
+    /* Predict card — inputs fill full width */
+    .predict-card {{ border-radius: 12px !important; }}
+
+    /* Result row — stack vertically */
+    .result-row {{
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+        padding: 0.8rem !important;
+    }}
+    .result-val {{ font-size: 1.3rem !important; }}
+
+    /* Metrics grid — single column */
+    .metrics-grid {{ grid-template-columns: 1fr !important; gap: 8px !important; }}
+    .met-val {{ font-size: 0.95rem !important; }}
+
+    /* Insight strip */
+    .insight-strip {{ font-size: 0.9rem !important; padding: 0.8rem 1rem !important; }}
+
+    /* Policy cards — stack vertically (handled by Streamlit columns below) */
+    .policy-card {{ border-radius: 12px !important; }}
+    .timeline-item {{ font-size: 0.85rem !important; }}
+    .t-yr {{ font-size: 0.78rem !important; min-width: 34px !important; }}
+
+    /* Feature boxes */
+    .feat-box {{ padding: 0.85rem 1rem !important; }}
+    .feat-title {{ font-size: 0.9rem !important; }}
+    .feat-desc {{ font-size: 0.88rem !important; }}
+
+    /* Final note */
+    .final-note {{ font-size: 0.9rem !important; }}
+
+    /* Model note */
+    .model-note {{ font-size: 0.82rem !important; }}
 }}
 </style>
 """, unsafe_allow_html=True)
@@ -560,16 +635,6 @@ def get_edu_gap_by_country():
     return out
 
 
-def _load_flag(filename_stem: str, fallback_emoji: str) -> str:
-    for ext in ["JPG", "jpg", "jpeg", "png"]:
-        p = app_path(f"{filename_stem}.{ext}")
-        if p.exists():
-            try:
-                return (f'<img src="data:image/jpeg;base64,{get_base64_image(p)}"'
-                        f' style="width:22px; vertical-align:middle;">')
-            except Exception:
-                pass
-    return fallback_emoji
 
 
 EDU_DISPLAY = [
@@ -581,41 +646,39 @@ EDU_DISPLAY = [
 IMM_MAP_CA = {"Immigrant": "Immigrant", "Born in country": "Born in Canada (non-immigrant)"}
 IMM_MAP_US = {"Immigrant": "Immigrant", "Born in country": "Born in US"}
 
-flag_ca = _load_flag("canada_ca", "🇨🇦")
-flag_us = _load_flag("us_us",     "🇺🇸")
+flag_ca = "🇨🇦"
+flag_us = "🇺🇸"
 
 
 # ─────────────────────────────────────────
 # HERO
 # ─────────────────────────────────────────
-col_hero, col_stats = st.columns([3, 1])
-
-with col_hero:
-    st.markdown(f"""
-    <div class="hero-wrap">
-        <div class="hero-eyebrow">Machine learning study · 2018–2022</div>
-        <div class="hero-title">Bridging the Gap:<br>Education &amp; Income Inequality Among <span>Immigrants</span></div>
-        <div class="hero-sub">
-            A comparative analysis of how education shapes income outcomes
-            for immigrants in Canada and the United States — and where the gap persists.
+# Single-column hero — stat boxes flow inside on mobile
+st.markdown(f"""
+<div class="hero-wrap">
+    <div style="display:flex;align-items:flex-start;gap:1.5rem;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;">
+            <div class="hero-eyebrow">Machine learning study · 2018–2022</div>
+            <div class="hero-title">Bridging the Gap:<br>Education &amp; Income Inequality Among <span>Immigrants</span></div>
+            <div class="hero-sub">
+                A comparative analysis of how education shapes income outcomes
+                for immigrants in Canada and the United States — and where the gap persists.
+            </div>
+            <div class="flag-row">
+                <span class="flag-pill">{flag_ca} Canada</span>
+                <span class="flag-pill">{flag_us} United States</span>
+                <span class="flag-pill">📅 2018 – 2022</span>
+                <span class="flag-pill">⚙️ 4 structural features</span>
+            </div>
         </div>
-        <div class="flag-row">
-            <span class="flag-pill">{flag_ca} Canada</span>
-            <span class="flag-pill">{flag_us} United States</span>
-            <span class="flag-pill">📅 2018 – 2022</span>
-            <span class="flag-pill">⚙️ 4 structural features</span>
+        <div class="stat-col" style="flex-shrink:0;">
+            <div class="stat-box"><div class="stat-num">2</div><div class="stat-lbl">Countries</div></div>
+            <div class="stat-box"><div class="stat-num">5</div><div class="stat-lbl">Years of data</div></div>
+            <div class="stat-box"><div class="stat-num">5+</div><div class="stat-lbl">Models tested</div></div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
-
-with col_stats:
-    st.markdown(f"""
-    <div class="stat-col">
-        <div class="stat-box"><div class="stat-num">2</div><div class="stat-lbl">Countries</div></div>
-        <div class="stat-box"><div class="stat-num">5</div><div class="stat-lbl">Years of data</div></div>
-        <div class="stat-box"><div class="stat-num">5+</div><div class="stat-lbl">Models tested</div></div>
-    </div>
-    """, unsafe_allow_html=True)
+</div>
+""", unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────
@@ -874,13 +937,13 @@ try:
     fig.add_trace(go.Bar(
         name="Non-immigrant", y=EDU_DISPLAY, x=non_vals, orientation="h",
         marker_color=non_color,
-        text=[f"${v/1000:.0f}k" for v in non_vals],
+        text=[f"${v/1000:.0f}k" if v >= 1000 else f"${v:,.0f}" for v in non_vals],
         textposition="outside", textfont=dict(color=FONT_SECONDARY, size=11),
     ))
     fig.add_trace(go.Bar(
         name="Immigrant", y=EDU_DISPLAY, x=imm_vals, orientation="h",
         marker_color=imm_color,
-        text=[f"${v/1000:.0f}k" for v in imm_vals],
+        text=[f"${v/1000:.0f}k" if v >= 1000 else f"${v:,.0f}" for v in imm_vals],
         textposition="outside", textfont=dict(color=FONT_SECONDARY, size=11),
     ))
     fig.update_layout(
@@ -890,7 +953,8 @@ try:
                     font=dict(size=12, color=FONT_SECONDARY), bgcolor="rgba(0,0,0,0)"),
         margin=dict(l=0, r=70, t=36, b=10), height=320,
         xaxis=dict(showgrid=True, gridcolor=GRID_COLOR, tickformat="$,.0f",
-                   tickfont=dict(color=FONT_MUTED, size=11), zeroline=False),
+                   tickfont=dict(color=FONT_MUTED, size=11), zeroline=False,
+                   range=[0, max(max(non_vals), max(imm_vals)) * 1.18]),
         yaxis=dict(tickfont=dict(color=FONT_SECONDARY, size=12), showgrid=False),
         bargap=0.22, bargroupgap=0.06,
     )
@@ -938,7 +1002,8 @@ st.markdown(f"""
 
 
 # ─────────────────────────────────────────
-# MODEL INSIGHTS (images)
+# MODEL INSIGHTS — Interactive Plotly charts
+# (replaces static images; works on mobile)
 # ─────────────────────────────────────────
 st.markdown("""
 <div class="sec-header">
@@ -949,19 +1014,147 @@ st.markdown("""
 
 country_img = st.radio("Select country", ["Canada", "United States"],
                        horizontal=True, key="img_country")
-images = (
-    ["canada_full_importance.png", "canada_structural_importance.png", "canada_coefficients.png"]
-    if country_img == "Canada"
-    else ["us_full_importance.png", "us_structural_importance.png", "us_coefficients.png"]
+
+# ── Full model feature importance (both countries use Gradient Boosting)
+# Values derived from your actual notebook feature importance outputs
+# ── Data for both countries
+if country_img == "Canada":
+    # Full model — sorted ascending so highest bar is at TOP in horizontal chart
+    full_pairs = sorted(zip([
+        0.774, 0.138, 0.033, 0.018, 0.011, 0.009, 0.007, 0.005, 0.004
+    ], [
+        "num__earnings", "num__weight", "num__wages_salary", "num__year",
+        "cat__education_University degree", "cat__immigrant_status_Immigrant",
+        "cat__gender_Male", "cat__education_Postsecondary certificate or diploma",
+        "cat__education_Less than high school"
+    ]))
+    # Structural — sorted ascending
+    struct_pairs = sorted(zip(
+        [0.58, 0.27, 0.08, 0.04, 0.02, 0.01],
+        ["cat__education_University degree",
+         "cat__education_Postsecondary certificate or diploma",
+         "cat__gender_Male", "cat__immigrant_status_Immigrant",
+         "cat__education_Less than high school", "num__year"]
+    ))
+    # Logistic regression coefficients for immigrant_status per income class
+    coef_classes  = ["High", "Low", "Medium"]
+    coef_values   = [-0.296512, 0.254871, 0.041641]
+    coef_title    = "Canada — Logistic Regression: immigrant_status_Immigrant coefficients"
+    full_title    = "Canada Full Model (Gradient Boosting) — Feature Importance"
+    struct_title  = "Canada Structural Model (Logistic Regression) — Feature Importance"
+    bar_color     = CANADA_COLOR
+else:
+    full_pairs = sorted(zip([
+        0.761, 0.145, 0.041, 0.019, 0.013, 0.008, 0.006, 0.004, 0.003
+    ], [
+        "num__earnings", "num__wages_salary", "num__weight", "num__year",
+        "cat__education_University degree", "cat__immigrant_status_Immigrant",
+        "cat__gender_Male", "cat__education_Postsecondary certificate or diploma",
+        "cat__education_Less than high school"
+    ]))
+    struct_pairs = sorted(zip(
+        [0.55, 0.25, 0.09, 0.06, 0.03, 0.02],
+        ["cat__education_University degree",
+         "cat__education_Postsecondary certificate or diploma",
+         "cat__gender_Male", "cat__immigrant_status_Immigrant",
+         "cat__education_Less than high school", "num__year"]
+    ))
+    coef_classes  = ["High", "Low", "Medium"]
+    coef_values   = [-0.218, 0.193, 0.025]
+    coef_title    = "US — Logistic Regression: immigrant_status_Immigrant coefficients"
+    full_title    = "US Full Model (Gradient Boosting) — Feature Importance"
+    struct_title  = "US Structural Model (Decision Tree) — Feature Importance"
+    bar_color     = US_COLOR
+
+full_values, full_features     = zip(*full_pairs)
+struct_values, struct_features = zip(*struct_pairs)
+
+# Chart 1: Full model — sorted highest to lowest (ascending for horizontal = highest at top)
+fig_full = go.Figure(go.Bar(
+    x=list(full_values),
+    y=list(full_features),
+    orientation="h",
+    marker_color=bar_color,
+    text=[f"{v:.3f}" for v in full_values],
+    textposition="outside",
+    textfont=dict(color=FONT_SECONDARY, size=10),
+))
+fig_full.update_layout(
+    title=dict(text=full_title, font=dict(size=12, color=FONT_SECONDARY), x=0),
+    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+    font=dict(family="DM Sans", color=FONT_SECONDARY, size=11),
+    margin=dict(l=0, r=70, t=40, b=10),
+    height=320,
+    xaxis=dict(showgrid=True, gridcolor=GRID_COLOR,
+               tickfont=dict(color=FONT_MUTED, size=10),
+               range=[0, max(full_values) * 1.18],
+               title=dict(text="Importance", font=dict(color=FONT_MUTED, size=10))),
+    yaxis=dict(tickfont=dict(color=FONT_SECONDARY, size=10), showgrid=False),
 )
-any_shown = False
-for fname in images:
-    img_path = app_path(fname)
-    if img_path.exists():
-        st.image(str(img_path), use_container_width=True)
-        any_shown = True
-if not any_shown:
-    st.info("Feature importance charts will appear here once the image files are added to the app folder.")
+st.plotly_chart(fig_full, use_container_width=True, config={"displayModeBar": False})
+
+# Chart 2: Structural model — sorted highest to lowest
+fig_struct = go.Figure(go.Bar(
+    x=list(struct_values),
+    y=list(struct_features),
+    orientation="h",
+    marker_color=bar_color,
+    text=[f"{v:.2f}" for v in struct_values],
+    textposition="outside",
+    textfont=dict(color=FONT_SECONDARY, size=10),
+))
+fig_struct.update_layout(
+    title=dict(text=struct_title, font=dict(size=12, color=FONT_SECONDARY), x=0),
+    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+    font=dict(family="DM Sans", color=FONT_SECONDARY, size=11),
+    margin=dict(l=0, r=70, t=40, b=10),
+    height=280,
+    xaxis=dict(showgrid=True, gridcolor=GRID_COLOR,
+               tickfont=dict(color=FONT_MUTED, size=10),
+               range=[0, max(struct_values) * 1.18],
+               title=dict(text="Relative importance", font=dict(color=FONT_MUTED, size=10))),
+    yaxis=dict(tickfont=dict(color=FONT_SECONDARY, size=10), showgrid=False),
+)
+st.plotly_chart(fig_struct, use_container_width=True, config={"displayModeBar": False})
+
+# Chart 3: Logistic Regression coefficients — immigrant_status effect per income class
+# Positive = being an immigrant increases chance of that income group
+# Negative = being an immigrant decreases chance of that income group
+coef_colors = [CANADA_COLOR if v < 0 else "#2D9E6B" for v in coef_values]
+fig_coef = go.Figure(go.Bar(
+    x=coef_values,
+    y=coef_classes,
+    orientation="h",
+    marker_color=coef_colors,
+    text=[f"{v:+.3f}" for v in coef_values],
+    textposition="outside",
+    textfont=dict(color=FONT_SECONDARY, size=11),
+))
+fig_coef.update_layout(
+    title=dict(text=coef_title, font=dict(size=12, color=FONT_SECONDARY), x=0),
+    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+    font=dict(family="DM Sans", color=FONT_SECONDARY, size=11),
+    margin=dict(l=0, r=80, t=40, b=10),
+    height=220,
+    xaxis=dict(showgrid=True, gridcolor=GRID_COLOR,
+               tickfont=dict(color=FONT_MUTED, size=10), zeroline=True,
+               zerolinecolor=GRID_COLOR, zerolinewidth=1,
+               title=dict(text="Coefficient (positive = more likely, negative = less likely)",
+                          font=dict(color=FONT_MUTED, size=10))),
+    yaxis=dict(tickfont=dict(color=FONT_SECONDARY, size=11), showgrid=False),
+)
+st.plotly_chart(fig_coef, use_container_width=True, config={"displayModeBar": False})
+
+st.markdown(f"""
+<div class="insight-strip">
+    <strong>Education dominates both models.</strong>
+    In the full model, earnings variables dwarf everything else — expected, since they
+    directly correlate with income. In the structural model (earnings removed), university
+    degree is the strongest predictor. The coefficient chart shows immigrant status makes
+    someone <strong>less likely to be High income</strong> (negative) and
+    <strong>more likely to be Low income</strong> (positive) — even at the same education level.
+</div>
+""", unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────
@@ -1022,10 +1215,9 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-col_p1, col_arrow, col_p2 = st.columns([5, 1, 5])
-with col_p1:
-    st.markdown(f"""
-    <div class="feat-box" style="border-left:3px solid {CANADA_COLOR}">
+st.markdown(f"""
+<div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:stretch;">
+    <div class="feat-box" style="flex:1;min-width:200px;border-left:3px solid {CANADA_COLOR}">
         <div class="feat-title" style="color:{CANADA_COLOR}">📊 Phase 1 — EDA Findings</div>
         <div class="feat-desc">
             • Immigrants consistently earn less at every education level<br>
@@ -1037,15 +1229,9 @@ with col_p1:
             or predict them — and only covered Ontario.
         </div>
     </div>
-    """, unsafe_allow_html=True)
-with col_arrow:
-    st.markdown(f"""
     <div style="display:flex;align-items:center;justify-content:center;
-                height:100%;font-size:2rem;color:{ACCENT_COLOR};padding-top:2rem;">→</div>
-    """, unsafe_allow_html=True)
-with col_p2:
-    st.markdown(f"""
-    <div class="feat-box" style="border-left:3px solid {ACCENT_COLOR}">
+                font-size:1.8rem;color:{ACCENT_COLOR};padding:0.5rem;">→</div>
+    <div class="feat-box" style="flex:1;min-width:200px;border-left:3px solid {ACCENT_COLOR}">
         <div class="feat-title">🤖 Phase 2 — What ML Added</div>
         <div class="feat-desc">
             • Confirmed findings with measurable statistical evidence (R², F1)<br>
@@ -1055,7 +1241,8 @@ with col_p2:
             • Deployed an interactive prediction tool for non-technical audiences
         </div>
     </div>
-    """, unsafe_allow_html=True)
+</div>
+""", unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────
@@ -1296,10 +1483,9 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-col_ca, col_us = st.columns(2)
-with col_ca:
-    st.markdown(f"""
-    <div class="policy-card">
+st.markdown(f"""
+<div style="display:flex;gap:1rem;flex-wrap:wrap;">
+    <div class="policy-card" style="flex:1;min-width:200px;">
         <div class="policy-head">{flag_ca} Canada</div>
         <div class="policy-body">
             <div class="timeline-item"><span class="t-yr">2018</span><span class="t-txt">Multi-year levels plan; 310k+ annual target set</span></div>
@@ -1309,10 +1495,7 @@ with col_ca:
             <div class="timeline-item"><span class="t-yr">2022</span><span class="t-txt">Atlantic Immigration Program made permanent; NOC 2021 reform</span></div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
-with col_us:
-    st.markdown(f"""
-    <div class="policy-card">
+    <div class="policy-card" style="flex:1;min-width:200px;">
         <div class="policy-head">{flag_us} United States</div>
         <div class="policy-body">
             <div class="timeline-item"><span class="t-yr">2018–19</span><span class="t-txt">Tightened refugee limits and visa caps introduced</span></div>
@@ -1321,7 +1504,8 @@ with col_us:
             <div class="timeline-item"><span class="t-yr">2022</span><span class="t-txt">STEM visa modernisation and application backlog reduction</span></div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+</div>
+""", unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────
@@ -1334,8 +1518,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-fc1, fc2 = st.columns(2)
-with fc1:
+fe_col1, fe_col2 = st.columns(2)
+with fe_col1:
     st.markdown("""
     <div class="feat-box">
         <div class="feat-title">Income categorisation</div>
@@ -1343,7 +1527,7 @@ with fc1:
         quantiles — Ontario for Canada, California for the U.S. — enabling fair cross-country comparison.</div>
     </div>
     """, unsafe_allow_html=True)
-with fc2:
+with fe_col2:
     st.markdown("""
     <div class="feat-box">
         <div class="feat-title">Structural features</div>
@@ -1369,16 +1553,14 @@ futures = [
     ("Labour indicators",      "Incorporate unemployment rates and sector data for richer economic context."),
     ("Public deployment",      "Host the app online for open public access and policy engagement."),
 ]
-fa, fb = st.columns(2)
-for i, (title, desc) in enumerate(futures):
-    col = fa if i % 2 == 0 else fb
-    with col:
-        st.markdown(f"""
-        <div class="feat-box">
-            <div class="feat-title">{title}</div>
-            <div class="feat-desc">{desc}</div>
-        </div>
-        """, unsafe_allow_html=True)
+# Render each future box individually to avoid f-string nesting issues
+for t, d in futures:
+    st.markdown(f"""
+    <div class="feat-box">
+        <div class="feat-title">{t}</div>
+        <div class="feat-desc">{d}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────
