@@ -1021,7 +1021,7 @@ country_img = st.radio("Select country", ["Canada", "United States"],
 if country_img == "Canada":
     # Full model — sorted ascending so highest bar is at TOP in horizontal chart
     full_pairs = sorted(zip([
-        0.774, 0.138, 0.033, 0.018, 0.011, 0.009, 0.007, 0.005, 0.004
+        0.909, 0.059, 0.016, 0.007, 0.004, 0.002, 0.001, 0.001, 0.001
     ], [
         "num__earnings", "num__weight", "num__wages_salary", "num__year",
         "cat__education_University degree", "cat__immigrant_status_Immigrant",
@@ -1038,7 +1038,7 @@ if country_img == "Canada":
     ))
     # Logistic regression coefficients for immigrant_status per income class
     coef_classes  = ["High", "Low", "Medium"]
-    coef_values   = [-0.296512, 0.254871, 0.041641]
+    coef_values   = [-0.3289, 0.2628, 0.0661]
     coef_title    = "Canada — Logistic Regression: immigrant_status_Immigrant coefficients"
     full_title    = "Canada Full Model (Gradient Boosting) — Feature Importance"
     struct_title  = "Canada Structural Model (Logistic Regression) — Feature Importance"
@@ -1218,7 +1218,7 @@ st.markdown("""
 st.markdown(f"""
 <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:stretch;">
     <div class="feat-box" style="flex:1;min-width:200px;border-left:3px solid {CANADA_COLOR}">
-        <div class="feat-title" style="color:{CANADA_COLOR}">📊 Phase 1 — EDA Findings</div>
+        <div class="feat-title" style="color:{CANADA_COLOR}">Phase 1 — EDA Findings</div>
         <div class="feat-desc">
             • Immigrants consistently earn less at every education level<br>
             • The gap is largest at the university degree level<br>
@@ -1232,7 +1232,7 @@ st.markdown(f"""
     <div style="display:flex;align-items:center;justify-content:center;
                 font-size:1.8rem;color:{ACCENT_COLOR};padding:0.5rem;">→</div>
     <div class="feat-box" style="flex:1;min-width:200px;border-left:3px solid {ACCENT_COLOR}">
-        <div class="feat-title">🤖 Phase 2 — What ML Added</div>
+        <div class="feat-title">Phase 2 — What ML Added</div>
         <div class="feat-desc">
             • Confirmed findings with measurable statistical evidence (R², F1)<br>
             • Quantified how much education and immigrant status influence income group<br>
@@ -1308,11 +1308,11 @@ st.markdown("""
 cm_country = st.radio("Select country", ["Canada", "United States"],
                       horizontal=True, key="cm_country")
 if cm_country == "Canada":
-    cm_values  = [[1820, 620, 310], [580, 1540, 630], [290, 580, 1890]]
+    cm_values  = [[24018, 5142, 6618], [9070, 21660, 9587], [16265, 13055, 12881]]
     model_name = "Logistic Regression (Canada structural)"
-    accuracy   = "49.3%"
+    accuracy   = "49.5%"
 else:
-    cm_values  = [[1650, 710, 290], [620, 1490, 680], [310, 650, 1820]]
+    cm_values  = [[44182, 7727, 14947], [17257, 44849, 23449], [30954, 29404, 30111]]
     model_name = "Decision Tree (US structural)"
     accuracy   = "49.1%"
 
@@ -1345,9 +1345,16 @@ fig_cm.update_layout(
 st.plotly_chart(fig_cm, use_container_width=True, config={"displayModeBar": False})
 st.markdown("""
 <div class="insight-strip">
-    Diagonal numbers are correct predictions. Medium income is hardest to classify — it overlaps
-    most with both Low and High in terms of education and immigrant status combinations.
-    ~49% accuracy on a 3-class balanced problem (random = 33%) shows genuine pattern learning.
+    <strong>How to read this chart:</strong> Each row shows a real income group (what a person
+    actually earns). Each column shows what the model predicted. The <strong>bold highlighted
+    numbers along the diagonal</strong> are correct predictions — the model got those right.
+    Everything else is a mistake.<br><br>
+    <strong>Why is accuracy only ~49%?</strong> Because this model only knows four things about
+    each person: their education, gender, immigrant status, and year. It has no idea what they
+    actually earn. A model that just randomly guessed between three groups would score 33%, so
+    49% means the model genuinely learned real patterns from demographics alone. Medium income
+    is the hardest to predict correctly because many people — immigrant or not, with various
+    education levels — fall into that middle range.
 </div>
 """, unsafe_allow_html=True)
 
@@ -1587,6 +1594,11 @@ st.markdown(f"""
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
+# This flag prevents the AI from firing again on every re-render after st.rerun()
+# The bug: user_q still holds text after rerun, so (send_btn or user_q) stays True forever
+# The fix: only fire when send_btn was JUST clicked (True for exactly one render cycle)
+if "ai_submitted" not in st.session_state:
+    st.session_state.ai_submitted = False
 
 ai_col, btn_col = st.columns([5, 1])
 with ai_col:
@@ -1597,6 +1609,67 @@ with ai_col:
     )
 with btn_col:
     send_btn = st.button("Ask →", key="ai_send_btn", use_container_width=True)
+
+# Set flag when button is clicked
+if send_btn and user_q.strip():
+    st.session_state.ai_submitted = True
+    st.session_state.pending_question = user_q.strip()
+
+# Only process once per submission
+if st.session_state.ai_submitted:
+    st.session_state.ai_submitted = False  # reset immediately so it doesn't loop
+    question = st.session_state.get("pending_question", "")
+    if question:
+        st.session_state.messages.append({"role": "user", "content": question})
+
+        SYSTEM_PROMPT = """You are an AI assistant in the "Bridging the Gap" research app — a machine
+learning study on income inequality between immigrants and non-immigrants in Canada and the US.
+
+Key facts:
+- Data: CIS 2018-2022 (Canada); ACS 2018-2022 (US). Training: Ontario/California. Test: rest of country.
+- Structural model features: year, gender, education, immigrant status (no earnings variables).
+- Best full model: Gradient Boosting (Canada R²=0.7841, US R²=0.8484).
+- Best structural regression R²: Canada 0.1343, US 0.1201.
+- Best structural classification: Logistic Regression Canada 49.5%, Decision Tree US 49.1%.
+- ANN tested — marginal gains over GB, complexity not justified.
+- Key findings: Education is #1 predictor. Immigrants earn less at every education level.
+  In Canada the gap widens at university ($12,802 gap). In the US university-educated immigrants earn $580 MORE than non-immigrants.
+- R² of 0.13 is intentionally low — earnings variables removed to isolate demographic effects.
+- Random guessing on 3 classes = 33%, so 49% shows genuine learning from demographics alone.
+
+Answer in plain English (2-4 sentences for simple questions). Be friendly and encouraging."""
+
+        try:
+            api_key = st.secrets.get("GROQ_API_KEY", "")
+            if not api_key:
+                reply = "⚠️ GROQ_API_KEY not found in secrets.toml. Add it to enable AI responses."
+            else:
+                resp = requests.post(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers={"Content-Type": "application/json",
+                             "Authorization": f"Bearer {api_key}"},
+                    json={
+                        "model": "llama-3.3-70b-versatile",
+                        "max_tokens": 400,
+                        "messages": [
+                            {"role": "system", "content": SYSTEM_PROMPT},
+                            *[{"role": m["role"], "content": m["content"]}
+                              for m in st.session_state.messages],
+                        ],
+                    },
+                    timeout=30,
+                )
+                if resp.status_code == 200:
+                    reply = resp.json()["choices"][0]["message"]["content"]
+                elif resp.status_code == 401:
+                    reply = "⚠️ Invalid API key. Check your secrets.toml."
+                else:
+                    reply = f"⚠️ Error {resp.status_code}. Please try again."
+        except Exception:
+            reply = "Sorry, I couldn't connect right now. Please try again in a moment."
+
+        st.session_state.messages.append({"role": "assistant", "content": reply})
+        st.rerun()
 
 for msg in st.session_state.messages:
     is_user    = msg["role"] == "user"
@@ -1618,56 +1691,6 @@ for msg in st.session_state.messages:
         </div>
     </div>
     """, unsafe_allow_html=True)
-
-if (send_btn or user_q) and user_q.strip():
-    st.session_state.messages.append({"role": "user", "content": user_q.strip()})
-
-    SYSTEM_PROMPT = """You are an AI assistant in the "Bridging the Gap" research app — a machine
-learning study on income inequality between immigrants and non-immigrants in Canada and the US.
-
-Key facts:
-- Data: CIS 2018-2022 (Canada); ACS 2018-2022 (US). Training: Ontario/California. Test: rest of country.
-- Structural model features: year, gender, education, immigrant status (no earnings variables).
-- Best full model: Gradient Boosting (R² ~0.93-0.96). Best structural regression: GB (R² ~0.13).
-- Best structural classification: Logistic Regression (Canada), Decision Tree (US).
-- ANN tested — marginal gains over GB, complexity not justified.
-- Key findings: Education is #1 predictor. Immigrants earn less at every education level.
-  In Canada the gap widens at university degree level. In the US the immigrant effect is weaker.
-- R² of 0.13 is intentionally low — earnings variables removed to isolate demographic effects.
-
-Answer in plain English (2-4 sentences for simple questions). Be friendly and encouraging."""
-
-    try:
-        api_key = st.secrets.get("GROQ_API_KEY", "")
-        if not api_key:
-            reply = "⚠️ GROQ_API_KEY not found in secrets.toml. Add it to enable AI responses."
-        else:
-            resp = requests.post(
-                "https://api.groq.com/openai/v1/chat/completions",
-                headers={"Content-Type": "application/json",
-                         "Authorization": f"Bearer {api_key}"},
-                json={
-                    "model": "llama-3.3-70b-versatile",
-                    "max_tokens": 400,
-                    "messages": [
-                        {"role": "system", "content": SYSTEM_PROMPT},
-                        *[{"role": m["role"], "content": m["content"]}
-                          for m in st.session_state.messages],
-                    ],
-                },
-                timeout=30,
-            )
-            if resp.status_code == 200:
-                reply = resp.json()["choices"][0]["message"]["content"]
-            elif resp.status_code == 401:
-                reply = "⚠️ Invalid API key. Check your secrets.toml."
-            else:
-                reply = f"⚠️ Error {resp.status_code}. Please try again."
-    except Exception:
-        reply = "Sorry, I couldn't connect right now. Please try again in a moment."
-
-    st.session_state.messages.append({"role": "assistant", "content": reply})
-    st.rerun()
 
 if st.session_state.messages:
     if st.button("🗑️ Clear conversation", key="clear_chat"):
